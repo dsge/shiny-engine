@@ -13,6 +13,10 @@
 + Include Pager
 + data: User, User (array[User])
 
+## ActivityPager (object)
++ Include Pager
++ data: Activity, Activity (array[Activity])
+
 ## User (object)
 + id: 7 (number)
 + email: `csaba.gyarmati@clapp.eu` (string)
@@ -108,3 +112,112 @@
 ## Minute (object)
 + id: 6 (number)
 + text: `30` (string)
+
+## Activity (object)
++ id: 1 (number)
++ name: `Amazing Budapest` (string)
++ user_id: 1 (number)
++ subtitle: `I!' said the King, 'that saves a world of trouble, you.` (string)
++ main_category: ActivityCategory (array[ActivityCategory])
++ sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (array[ActivityCategory])
++ length_of_activity
+    + Include ActivityLength
++ unspecified: true (boolean)
++ description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (string)
++ detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (string)
++ faq: Faq, Faq, Faq (array[Faq])
++ what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (string)
++ good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (string)
++ languages: Language, Language (array[Language])
++ cancellation_policy: CancellationPolicy (array[CancellationPolicy])
++ min_participant: 0 (number)
++ max_participant: 0 (number)
++ extra_info
+    + Include ActivityExtraInfo
++ free_sale: `true` (string)
++ country: Country (array[Country])
++ timezone: TimeZone (array[TimeZone])
++ location: `Budapest lajos utca 64` (string)
++ coordinates
+    + Include Coordinate
++ exact_meeting_point: `A sarkon.` (string)
++ phone_zone: PhoneZone (array[PhoneZone])
++ phone_number: `123456789` (string)
++ checkin_times: OpeningHours, OpeningHours (array[OpeningHours])
++ opening_hours: OpeningHours, OpeningHours (array[OpeningHours])
++ price_categories: PriceCategory, PriceCategory (array[PriceCategory])
++ price_includes: `Include` (string)
++ price_not_includes: `Not include` (string)
++ extra_options: PriceCategory (array[PriceCategory])
++ video_url: `https:\/\/youtu.be\/1i-ztAmPs4s` (string)
++ cover: `http:\/\/twistour-be.dev.clapp.eu\/storage\/activity_cover\/85\/eo\/85eoGBwQmW9T8oynVSCr5HPUMZB7waYj.png` (string)
++ media: GalleryImage, GalleryImage, GalleryImage, GalleryImage, GalleryImage, GalleryImage, GalleryImage (array[GalleryImage])
++ completion_status: `pricing` (enum[string])
+    + Members
+        + information
+        + location
+        + availability
+        + pricing
+        + media
+        + completed
++ review_status: `pending` (enum[string])
+    + Members
+        + pending
+        + approved
+        + refused
++ is_active: false (boolean)
+
+## ActivityCategory (object)
++ id: 5 (number)
++ title: `Family` (string)
+
+## ActivityLength (object)
++ days: 1 (number)
++ hours: 6 (number)
++ minutes: 15 (number)
+
+## Faq (object)
++ question: `Faq question` (string)
++ answer: `Faq answer` (string)
+
+## CancellationPolicy (object)
++ id (enum[string])
+    + Members
+        + strict
+        + moderate
+        + flexible
+
++ title: `Strict` (string)
+
+## ActivityExtraInfo (object)
++ open_bar: false (boolean)
++ adults_only: false (boolean)
++ private_tour: false (boolean)
++ kids_friendly: false (boolean)
++ cruise_ship_ready: true (boolean)
++ vegan_food_available: false (boolean)
++ wheelchair_accessible: true (boolean)
++ hotel_transfer_included: false (boolean)
++ mobile_voucher_accepted: false (boolean)
++ hotel_transfer_available: false (boolean)
+
+## Coordinate (object)
++ latitude: `47.5308788` (string)
++ longitude: `19.0396924` (string)
+
+## PriceCategory (object)
++ name: `Ticket` (string)
++ note: `Note` (string)
++ net_price: 15 (number)
++ retail_price: 10 (number)
+
+## GalleryImage (object)
++ id: 1 (number)
++ filename: `RJtSjjPXBAirKTFH3on3E7nsNA4cYPlc.png` (string)
++ title: `` (string)
++ description: `` (string)
++ activity_id: 1 (number)
++ url: `http:\/\/twistour-be.dev.clapp.eu\/storage\/activity_media\/RJ\/tS\/RJtSjjPXBAirKTFH3on3E7nsNA4cYPlc.png` (string)
+
+## TimeZone (object)
++ id: `Europe\/Budapest` (string)
