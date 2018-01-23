@@ -1,0 +1,105 @@
+## Activity [/activity]
+
+### List [GET]
+
++ Response 200 (application/json)
+
+    + Attributes(ActivityPager)
+
+### Store [POST]
+
++ Request (application/json)
+
+    + Attributes
+        + name: `Amazing Budapest` (required, string)
+        + user_id: 1 (required, number)
+        + subtitle: `I!' said the King, 'that saves a world of trouble, you.` (required, string)
+        + main_category: ActivityCategory (required, array[ActivityCategory])
+        + sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (optional, array[ActivityCategory])
+        - length_of_activity (required, ActivityLength)
+        + unspecified: true (required, boolean)
+        + description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (required, string)
+        + detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (optional, string)
+        + faq: Faq, Faq, Faq (optional, array[Faq])
+        + what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (optional, string)
+        + good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (optional, string)
+        + languages: Language, Language (required, array[Language])
+        + cancellation_policy: CancellationPolicy (required, array[CancellationPolicy])
+        + min_participant: 0 (required, number)
+        + max_participant: 0 (required, number)
+        - extra_info (required, ActivityExtraInfo)
+        + free_sale: `true` (required, string)
+        + completion_status: `information` (required, enum[string])
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Show [GET /activity/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Edit [PUT /activity/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
+
++ Request (application/json)
+
+    + Attributes
+        + name: `Amazing Budapest` (optional, string)
+        + subtitle: `I!' said the King, 'that saves a world of trouble, you.` (optional, string)
+        + main_category: ActivityCategory (optional, array[ActivityCategory])
+        + sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (optional, array[ActivityCategory])
+        - length_of_activity (optional, ActivityLength)
+        + unspecified: true (optional, boolean)
+        + description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (optional, string)
+        + detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (optional, string)
+        + faq: Faq, Faq, Faq (optional, array[Faq])
+        + what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (optional, string)
+        + good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (optional, string)
+        + languages: Language, Language (optional, array[Language])
+        + cancellation_policy: CancellationPolicy (optional, array[CancellationPolicy])
+        + min_participant: 0 (optional, number)
+        + max_participant: 0 (optional, number)
+        - extra_info (optional, ActivityExtraInfo)
+        + free_sale: `true` (optional, string)
+        + country: Country (optional, array[Country])
+        + timezone: TimeZone (optional, array[TimeZone])
+        + location: `Budapest lajos utca 64` (optional, string)
+        - coordinates (optional, Coordinate)
+        + exact_meeting_point: `A sarkon.` (optional, string)
+        + phone_zone: PhoneZone (optional, array[PhoneZone])
+        + phone_number: `123456789` (optional, string)
+        + checkin_times: OpeningHours, OpeningHours (optional, array[OpeningHours])
+        + opening_hours: OpeningHours, OpeningHours (optional, array[OpeningHours])
+        + price_categories: PriceCategory, PriceCategory (optional, array[PriceCategory])
+        + price_includes: `Include` (optional, string)
+        + price_not_includes: `Not include` (optional, string)
+        + extra_options: PriceCategory (optional, array[PriceCategory])
+        + video_url: `https:\/\/youtu.be\/1i-ztAmPs4s` (optional, string)
+        + completion_status: `information` (required, enum[string])
+            + Members
+                + information
+                + location
+                + availability
+                + pricing
+                + media
+                + completed
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Delete [DELETE /activity/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
++ Response 204 (application/json)
