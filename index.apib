@@ -1,0 +1,10 @@
+FORMAT: 1A
+HOST: http://twistour.dev.clapp.eu
+
+# Twistour
+
+- Minden http request `Content-type: application/json`-t küld és fogad, kivéve, ha mást írunk lentebb
+- Minden API endpoint standard http headerekkel és http hibakódokkal dolgozik
+- Ha a kliensnek van auth tokene (azaz “be van jelentkezve”), akkor minden további http requesthez csatolnia kell egy `Authorization: Bearer <auth token>` headert
+
+<!-- include(auth.apib) -->
