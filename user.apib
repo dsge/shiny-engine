@@ -1,0 +1,55 @@
+## USER  [/user]
+
+### List [GET]
+
++ Response 404 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(UserPager)
+
+### Create [POST]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "username": "csabagy" (required, string),
+                "email": "csaba.gyarmati@clapp.eu" (required, string),
+                "password": "newpasword" (required, string),
+                "terms_accepted": true (required, boolean)
+            }
+
++ Response 201
+
+    + Body
+
+            {
+                "token": "auth token"
+            }
+
+## USER Details [/user/{id}]
+
++ Parameters
+    + id (required, number, `1`) - User ID or me
+
+### Show [GET]
+
++ Response 200 (application/json)
+
+    + Attributes(User)
+
+### Edit [PUT]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "username": "csabagy" (string),
+                "password": "newpasword" (optional, string)
+            }
+
++ Response 200 (application/json)
+
+    + Attributes(UserPager)
