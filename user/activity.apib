@@ -1,15 +1,15 @@
-## USER Activity [/user/{user_id}/activity]
+## User Activity [/user/{user_id}/activity]
 
 + Parameters
     + user_id (required, number, `1`) - User ID
 
-### List [GET]
+### User activity list [GET]
 
 + Response 200 (application/json)
 
     + Attributes(ActivityPager)
 
-### Store [POST]
+### Create user activity [POST]
 
 + Request (application/json)
 
@@ -38,7 +38,7 @@
 
     + Attributes(Activity)
 
-### Show [GET /user/{user_id}/activity/{id}]
+### Show user activity [GET /user/{user_id}/activity/{id}]
 
 + Parameters
     + user_id (required, number, `1`) - User ID
@@ -48,7 +48,7 @@
 
     + Attributes(Activity)
 
-### Edit [PUT /user/{user_id}/activity/{id}]
+### Edit user activity [PUT /user/{user_id}/activity/{id}]
 
 + Parameters
     + user_id (required, number, `1`) - User ID
@@ -102,7 +102,7 @@
 
     + Attributes(Activity)
 
-### Delete [DELETE /user/{user_id}/activity/{id}]
+### Delete user activity [DELETE /user/{user_id}/activity/{id}]
 
 + Parameters
     + user_id (required, number, `1`) - User ID

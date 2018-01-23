@@ -1,13 +1,13 @@
-## USER  [/user]
+## User  [/user]
 
-### List [GET]
+### User list [GET]
 
 + Response 404 (application/json)
 + Response 200 (application/json)
 
     + Attributes(UserPager)
 
-### Create [POST]
+### Create user [POST]
 
 + Request (application/json)
 
@@ -28,18 +28,18 @@
                 "token": "auth token"
             }
 
-## USER Details [/user/{id}]
+## User Details [/user/{id}]
 
 + Parameters
     + id (required, number, `1`) - User ID or me
 
-### Show [GET]
+### User detail [GET]
 
 + Response 200 (application/json)
 
     + Attributes(User)
 
-### Edit [PUT]
+### Edit user data [PUT]
 
 + Request (application/json)
 
