@@ -1,0 +1,31 @@
+## USER Documents [/user/{id}/document]
+
++ Parameters
+    + id (required, number, `1`) - User ID
+
+### Upload document [POST]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Headers
+
+            Content-Length: $requestlen
+
+    + Body
+
+            --AaB03x
+            content-disposition: form-data; name="key"
+
+            $key
+            --AaB03x
+            content-disposition: form-data; name="document"; filename="$filename"
+            Content-Type: $mimetype
+            Content-Transfer-Encoding: binary
+
+            $binarydata
+            --AaB03x--
+
++ Response 415 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(User)

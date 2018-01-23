@@ -1,0 +1,27 @@
+## USER Avatar [/user/{id}/avatar]
+
++ Parameters
+    + id (required, number, `1`) - User ID
+
+### Upload avatar [POST]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Headers
+
+            Content-Length: $requestlen
+
+    + Body
+
+            --AaB03x
+            content-disposition: form-data; name="avatar"; filename="$filename"
+            Content-Type: $mimetype
+            Content-Transfer-Encoding: binary
+
+            $binarydata
+            --AaB03x--
+
++ Response 415 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(User)
