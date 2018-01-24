@@ -1,0 +1,22 @@
+## Favourite [/user/{user_id}/favourite]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+
+### Favourite an activity [POST]
+
++ Request (application/json)
+
+    + Attributes(Activity)
+
++ Response 200 (application/json)
+
+## Remove favourite [/user/{user_id}/favourite/{activity_id}]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+    + activity_id (required, number, `1`) - Activity ID
+
+### Remove an activity from favourites [DELETE]
+
++ Response 200 (application/json)
