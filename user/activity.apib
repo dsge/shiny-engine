@@ -1,9 +1,21 @@
-## User Activity [/user/{user_id}/activity]
+## User Activity [/user/{user_id}/activity{?q,review_status,is_active,per_page}]
 
 + Parameters
     + user_id (required, number, `1`) - User ID
 
 ### User activity list [GET]
+
++ Parameters
+    + q (optional, string, `budapest`)
+    + review_status (optional, enum[string])
+        + Members
+            + pending
+            + approved
+            + refused
+    + is_active (optional, boolean, `true`)
+    + per_page (optional, number)
+        + Default `15`
+
 
 + Response 200 (application/json)
 

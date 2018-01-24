@@ -1,6 +1,17 @@
-## Activity [/activity]
+## Activity [/activity{?q,review_status,is_active,per_page}]
 
 ### Activity list [GET]
+
++ Parameters
+    + q (optional, string, `budapest`)
+    + review_status (optional, enum[string])
+        + Members
+            + pending
+            + approved
+            + refused
+    + is_active (optional, boolean, `true`)
+    + per_page (optional, number)
+        + Default `15`
 
 + Response 200 (application/json)
 
