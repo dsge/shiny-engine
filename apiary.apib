@@ -1,80 +1,831 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://twistour-be.dev.clapp.eu/api/1.0
 
 # Twistour
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+- Minden http request `Content-type: application/json`-t küld és fogad, kivéve, ha mást írunk lentebb
+- Minden API endpoint standard http headerekkel és http hibakódokkal dolgozik
+- Ha a kliensnek van auth tokene (azaz “be van jelentkezve”), akkor minden további http requesthez csatolnia kell egy `Authorization: Bearer <auth token>` headert
 
-## Questions Collection [/questions]
+## Authentication [/auth]
 
-### List All Questions [GET]
+### Login [POST /auth/login]
 
-+ Response 200 (application/json)
+Bejelentkezni email cimmel es jelszoval vagy social auth segítségével.
 
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
+Ez az endpoint sikeres bejelentkezés esetén egy JWT tokent ( https://jwt.io ) ad vissza. A token a következőket tartalmazza:
 
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+```
+{
+    "roles": [], //array of strings, másolat a belépett user entity `roles` mezőjéről
+    "sub": 2, //string/int user unique id
+    "iss": "http://twistour-be.dev.clapp.eu/api/1.0/auth/login", //string token származási helye
+    "iat": 1464959200, //int unix timestamp, token létrehozásának időpontja
+    "exp": 1464962800, //int unix timestamp, token lejáratának időpontja
+    "nbf": 1464959200, //int unix timestamp, token érvényesség kezdetének időpontja
+    "jti": "45ac5cd03267ce11158177ec61c1bbc5" //string token unique id
+ }
+```
 
 + Request (application/json)
-
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /questions/2
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+                "email": "example@gmail.com",
+                "password": "example1234"
             }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "token": "auth token"
+            }
+
+### Reset password [POST /auth/password/reset]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "email": "example@gmail.com"
+            }
+
++ Response 200 (application/json)
+
+### Confirm code [POST /auth/password/confirm]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "token": "1234",
+                "password": "new password",
+                "email": "example@gmail.com"
+            }
+
++ Response 200 (application/json)
+
+### Refresh token [POST /auth/token]
+
+Élő, még nem lejárt token lecserélése egy új tokenre. - csak bejelentkezve!
+
++ Response 200 (application/json)
+
+    + Attributes
+
+        + token: `valid token` (string)
+
+
+## Social Authentication [/auth/{provider}]
+
++ Parameters
+    + provider (required, string, `facebook`) - facebook or google
+
+### Connect [POST]
+
+Amennyiben nem letezik a rendszerünkben a megfelelő user account, az API létrehozza.
+Amennyiben a felhasználónak még el kell fogadnia a terms and conditions-t (mert még nem regisztrált, vagy mert új terms van amit újra el kell fogadnia), akkor ez elsőre failelni fog 401-gyel, és csak a megfelelő paraméterek küldése mellett fogunk tudni tovább haladni.
+
++ Request (application/json)
+
+    + Attributes
+
+        + token: `facebook auth token` (required, string)
+
++ Response 401 (application/json)
+
+    + Attributes
+
+        + `terms_accepted`: false (boolean) - a felhasználó elfogadta-e a terms and conditions-t
+
++ Request (application/json)
+
+    + Attributes
+
+        + token: `facebook auth token` (required, string)
+        + `terms_accepted`: true (required, boolean) - a felhasználó elfogadja-e a terms and conditions-t
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "token": "auth token",
+            }
+
+
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "token": "auth token",
+            }
+
+
+### Disconnect [DELETE]
+
++ Response 200 (application/json)
+
+
+## User  [/user]
+
+### User list [GET]
+
++ Response 404 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(UserPager)
+
+### Create user [POST]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "username": "csabagy" (required, string),
+                "email": "csaba.gyarmati@clapp.eu" (required, string),
+                "password": "newpasword" (required, string),
+                "terms_accepted": true (required, boolean)
+            }
+
++ Response 201
+
+    + Body
+
+            {
+                "token": "auth token"
+            }
+
+## User Details [/user/{id}]
+
++ Parameters
+    + id (required, number, `1`) - User ID or me
+
+### User detail [GET]
+
++ Response 200 (application/json)
+
+    + Attributes(User)
+
+### Edit user data [PUT]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "username": "csabagy" (string),
+                "password": "newpasword" (optional, string)
+            }
+
++ Response 200 (application/json)
+
+    + Attributes(UserPager)
+
+## User Avatar [/user/{id}/avatar]
+
++ Parameters
+    + id (required, number, `1`) - User ID
+
+### Upload user avatar [POST]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Headers
+
+            Content-Length: $requestlen
+
+    + Body
+
+            --AaB03x
+            content-disposition: form-data; name="avatar"; filename="$filename"
+            Content-Type: $mimetype
+            Content-Transfer-Encoding: binary
+
+            $binarydata
+            --AaB03x--
+
++ Response 415 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(User)
+
+## User Documents [/user/{id}/document]
+
++ Parameters
+    + id (required, number, `1`) - User ID
+
+### Upload user document [POST]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Headers
+
+            Content-Length: $requestlen
+
+    + Body
+
+            --AaB03x
+            content-disposition: form-data; name="key"
+
+            $key
+            --AaB03x
+            content-disposition: form-data; name="document"; filename="$filename"
+            Content-Type: $mimetype
+            Content-Transfer-Encoding: binary
+
+            $binarydata
+            --AaB03x--
+
++ Response 415 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(User)
+
+## User Activity [/user/{user_id}/activity{?q,review_status,is_active,per_page}]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+
+### User activity list [GET]
+
++ Parameters
+    + q (optional, string, `budapest`)
+    + review_status (optional, enum[string])
+        + Members
+            + pending
+            + approved
+            + refused
+    + is_active (optional, boolean, `true`)
+    + per_page (optional, number)
+        + Default `15`
+
+
++ Response 200 (application/json)
+
+    + Attributes(ActivityPager)
+
+### Create user activity [POST]
+
++ Request (application/json)
+
+    + Attributes
+        + name: `Amazing Budapest` (required, string)
+        + user_id: 1 (required, number)
+        + subtitle: `I!' said the King, 'that saves a world of trouble, you.` (required, string)
+        + main_category: ActivityCategory (required, array[ActivityCategory])
+        + sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (optional, array[ActivityCategory])
+        - length_of_activity (required, ActivityLength)
+        + unspecified: true (required, boolean)
+        + description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (required, string)
+        + detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (optional, string)
+        + faq: Faq, Faq, Faq (optional, array[Faq])
+        + what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (optional, string)
+        + good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (optional, string)
+        + languages: Language, Language (required, array[Language])
+        + cancellation_policy: CancellationPolicy (required, array[CancellationPolicy])
+        + min_participant: 0 (required, number)
+        + max_participant: 0 (required, number)
+        - extra_info (required, ActivityExtraInfo)
+        + free_sale: `true` (required, string)
+        + completion_status: `information` (required, enum[string])
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Show user activity [GET /user/{user_id}/activity/{id}]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+    + id (required, number, `1`) - Activity ID
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Edit user activity [PUT /user/{user_id}/activity/{id}]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+    + id (required, number, `1`) - Activity ID
+
+
++ Request (application/json)
+
+    + Attributes
+        + name: `Amazing Budapest` (optional, string)
+        + subtitle: `I!' said the King, 'that saves a world of trouble, you.` (optional, string)
+        + main_category: ActivityCategory (optional, array[ActivityCategory])
+        + sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (optional, array[ActivityCategory])
+        - length_of_activity (optional, ActivityLength)
+        + unspecified: true (optional, boolean)
+        + description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (optional, string)
+        + detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (optional, string)
+        + faq: Faq, Faq, Faq (optional, array[Faq])
+        + what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (optional, string)
+        + good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (optional, string)
+        + languages: Language, Language (optional, array[Language])
+        + cancellation_policy: CancellationPolicy (optional, array[CancellationPolicy])
+        + min_participant: 0 (optional, number)
+        + max_participant: 0 (optional, number)
+        - extra_info (optional, ActivityExtraInfo)
+        + free_sale: `true` (optional, string)
+        + country: Country (optional, array[Country])
+        + timezone: TimeZone (optional, array[TimeZone])
+        + location: `Budapest lajos utca 64` (optional, string)
+        - coordinates (optional, Coordinate)
+        + exact_meeting_point: `A sarkon.` (optional, string)
+        + phone_zone: PhoneZone (optional, array[PhoneZone])
+        + phone_number: `123456789` (optional, string)
+        + checkin_times: OpeningHours, OpeningHours (optional, array[OpeningHours])
+        + opening_hours: OpeningHours, OpeningHours (optional, array[OpeningHours])
+        + price_categories: PriceCategory, PriceCategory (optional, array[PriceCategory])
+        + price_includes: `Include` (optional, string)
+        + price_not_includes: `Not include` (optional, string)
+        + extra_options: PriceCategory (optional, array[PriceCategory])
+        + video_url: `https:\/\/youtu.be\/1i-ztAmPs4s` (optional, string)
+        + completion_status: `information` (required, enum[string])
+            + Members
+                + information
+                + location
+                + availability
+                + pricing
+                + media
+                + completed
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Delete user activity [DELETE /user/{user_id}/activity/{id}]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+    + id (required, number, `1`) - Activity ID
+
++ Response 204 (application/json)
+
+## Favourite [/user/{user_id}/favourite]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+
+### Favourite an activity [POST]
+
++ Request (application/json)
+
+    + Attributes(Activity)
+
++ Response 200 (application/json)
+
+## Remove favourite [/user/{user_id}/favourite/{activity_id}]
+
++ Parameters
+    + user_id (required, number, `1`) - User ID
+    + activity_id (required, number, `1`) - Activity ID
+
+### Remove an activity from favourites [DELETE]
+
++ Response 200 (application/json)
+
+
+## Activity [/activity{?q,review_status,is_active,per_page}]
+
+### Activity list [GET]
+
++ Parameters
+    + q (optional, string, `budapest`)
+    + review_status (optional, enum[string])
+        + Members
+            + pending
+            + approved
+            + refused
+    + is_active (optional, boolean, `true`)
+    + per_page (optional, number)
+        + Default `15`
+
++ Response 200 (application/json)
+
+    + Attributes(ActivityPager)
+
+### Create activity [POST]
+
++ Request (application/json)
+
+    + Attributes
+        + name: `Amazing Budapest` (required, string)
+        + user_id: 1 (required, number)
+        + subtitle: `I!' said the King, 'that saves a world of trouble, you.` (required, string)
+        + main_category: ActivityCategory (required, array[ActivityCategory])
+        + sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (optional, array[ActivityCategory])
+        - length_of_activity (required, ActivityLength)
+        + unspecified: true (required, boolean)
+        + description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (required, string)
+        + detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (optional, string)
+        + faq: Faq, Faq, Faq (optional, array[Faq])
+        + what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (optional, string)
+        + good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (optional, string)
+        + languages: Language, Language (required, array[Language])
+        + cancellation_policy: CancellationPolicy (required, array[CancellationPolicy])
+        + min_participant: 0 (required, number)
+        + max_participant: 0 (required, number)
+        - extra_info (required, ActivityExtraInfo)
+        + free_sale: `true` (required, string)
+        + completion_status: `information` (required, enum[string])
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Show activity [GET /activity/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Edit activity [PUT /activity/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
+
++ Request (application/json)
+
+    + Attributes
+        + name: `Amazing Budapest` (optional, string)
+        + subtitle: `I!' said the King, 'that saves a world of trouble, you.` (optional, string)
+        + main_category: ActivityCategory (optional, array[ActivityCategory])
+        + sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (optional, array[ActivityCategory])
+        - length_of_activity (optional, ActivityLength)
+        + unspecified: true (optional, boolean)
+        + description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (optional, string)
+        + detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (optional, string)
+        + faq: Faq, Faq, Faq (optional, array[Faq])
+        + what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (optional, string)
+        + good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (optional, string)
+        + languages: Language, Language (optional, array[Language])
+        + cancellation_policy: CancellationPolicy (optional, array[CancellationPolicy])
+        + min_participant: 0 (optional, number)
+        + max_participant: 0 (optional, number)
+        - extra_info (optional, ActivityExtraInfo)
+        + free_sale: `true` (optional, string)
+        + country: Country (optional, array[Country])
+        + timezone: TimeZone (optional, array[TimeZone])
+        + location: `Budapest lajos utca 64` (optional, string)
+        - coordinates (optional, Coordinate)
+        + exact_meeting_point: `A sarkon.` (optional, string)
+        + phone_zone: PhoneZone (optional, array[PhoneZone])
+        + phone_number: `123456789` (optional, string)
+        + checkin_times: OpeningHours, OpeningHours (optional, array[OpeningHours])
+        + opening_hours: OpeningHours, OpeningHours (optional, array[OpeningHours])
+        + price_categories: PriceCategory, PriceCategory (optional, array[PriceCategory])
+        + price_includes: `Include` (optional, string)
+        + price_not_includes: `Not include` (optional, string)
+        + extra_options: PriceCategory (optional, array[PriceCategory])
+        + video_url: `https:\/\/youtu.be\/1i-ztAmPs4s` (optional, string)
+        + completion_status: `information` (required, enum[string])
+            + Members
+                + information
+                + location
+                + availability
+                + pricing
+                + media
+                + completed
+
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+### Delete activity [DELETE /activity/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
++ Response 204 (application/json)
+
+## Activity Cover [/activity/{id}/cover]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
+### Upload activity cover [POST]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Headers
+
+            Content-Length: $requestlen
+
+    + Body
+
+            --AaB03x
+            content-disposition: form-data; name="cover"; filename="$filename"
+            Content-Type: $mimetype
+            Content-Transfer-Encoding: binary
+
+            $binarydata
+            --AaB03x--
+
++ Response 404 (application/json)
++ Response 415 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+## Activity Media [/activity/{id}/media]
+
++ Parameters
+    + id (required, number, `1`) - Activity ID
+
+### Upload activity media [POST]
+
++ Request (multipart/form-data, boundary=AaB03x)
+
+    + Headers
+
+            Content-Length: $requestlen
+
+    + Body
+
+            --AaB03x
+            content-disposition: form-data; name="file"; filename="$filename"
+            Content-Type: $mimetype
+            Content-Transfer-Encoding: binary
+
+            $binarydata
+            --AaB03x--
+
++ Response 404 (application/json)
++ Response 415 (application/json)
++ Response 200 (application/json)
+
+    + Attributes(Activity)
+
+
+## Activity Category [/activity_category]
+
+### Activity Category list [GET]
+
++ Response 200 (application/json)
+
+    + Attributes(ActivityCategoryPager)
+
+
+## Language [/language]
+
+### Language list [GET]
+
++ Response 200 (application/json)
+
+    + Attributes(LanguagePager)
+
+
+# Data Structures
+
+## Pager
+
++ total: 4 (number)
++ per_page: 15 (number)
++ current_page: 1 (number)
++ last_page: 1 (number)
++ from: 1 (number)
++ to: 2 (number)
+
+## UserPager (object)
++ Include Pager
++ data: User, User (array[User])
+
+## ActivityPager (object)
++ Include Pager
++ data: Activity, Activity (array[Activity])
+
+## ActivityCategoryPager (object)
++ Include Pager
++ data: ActivityCategory, ActivityCategory (array[ActivityCategory])
+
+## LanguagePager (object)
++ Include Pager
++ data: Language, Language (array[Language])
+
+## User (object)
++ id: 7 (number)
++ email: `csaba.gyarmati@clapp.eu` (string)
++ username: `csabagy` (string)
++ full_name: `Csaba Gyarmati` (string)
++ security_question: `Mi a ceg neve?` (string)
++ security_answer`: `ClappCom` (string)
++ website_language_id: 25 (number)
++ country: Country (array[Country])
++ state: `NA` (string)
++ state_other: `NA` (string)
++ zip_code: `1036` (string)
++ city: `Budapest` (string)
++ address: `Lajos utca 74` (string)
++ company_phone_number: `12345678` (string)
++ company_phone_zone: PhoneZone (array[PhoneZone])
++ website: `http:\/\/clapp.eu` (string)
++ avatar: `http:\/\/twistour-be.dev.clapp.eu\/storage\/user_avatar\/n2\/S3\/n2S3GYIIo5aqbxpD2B1PhAkz37LcRVVa.png` (string)
++ introduction: `Ez itt a bemutatkozo szoveg.` (string)
++ company_representative_name: `Company Representative` (string)
++ company_representative_email: `company.representative@clapp.eu` (string)
++ company_representative_phone_number: `301234567` (string)
++ certificate_of_goodstanding: `RUYo5WKdf0jP20L1nerQ2LG7I0OSZqDj.png` (string)
++ payment_type: `bank` (string)
++ paypal_email: `paypal@clapp.eu` (string)
++ bank_name: `Bank` (string)
++ branch_name: `Branch` (string)
++ branch_country: Country (array[Country])
++ branch_state: `BState` (string)
++ branch_zip_code: `1036` (string)
++ branch_city: `Budapest` (string)
++ branch_address: `Lajos utca 74` (string)
++ account_holder_name: `Company Holder` (string)
++ account_number: `123456789` (string)
++ is_iban: true (boolean)
++ swift_code: `1234` (string)
++ tax_id: `4321` (string)
++ routing_number: `5555` (string)
++ additional_information: `Additional info` (string)
++ liability_insurance: `sKKaY33MFwoYSaJFbmTyqyAKPm8edUNY.png` (string)
++ company_representative_phone_zone: PhoneZone (array[PhoneZone])
++ created_at: `2018-01-18 10:46:35` (string)
++ updated_at: `2018-01-18 16:28:11` (string)
++ opening_hours: OpeningHours, OpeningHours (array[OpeningHours])
++ last_name: `Csaba` (string)
++ first_name: `Gyarmati` (string)
++ email_confirmed_at: `2018-01-18 10:46:35` (string)
++ newsletter: false (boolean)
++ terms_accepted: false (boolean)
++ roles: Role, Role (array[Role])
++ website_language: Language (array[Language])
++ languages: Language, Language (array[Language])
+
+## Country (object)
++ id: `HU` (string)
+
+## PhoneZone (object)
++ id: 36 (number)
+
+## Language (object)
++ id: 25 (number)
++ title: `Hungarian` (string)
+
+## Role (object)
++ id: 1 (number)
++ name: `site_owner` (string)
++ display_name: `Site Owner` (string)
++ description: `Site Owner` (string)
++ created_at: `2018-01-18 10:46:35` (string)
++ updated_at: `2018-01-18 10:46:35` (string)
+
+## OpeningHours (object)
++ monday: true (boolean)
++ tuesday: true (boolean)
++ wednesday: true (boolean)
++ thursday: true (boolean)
++ friday: true (boolean)
++ saturday: false (boolean)
++ sunday: false (boolean)
++ start_time (required, object)
+    + Include OpeningHourTime
++ end_time (optional, object)
+    + Include OpeningHourTime
+
+## OpeningHourTime (object)
++ hours: Hour (array[Hour])
++ minutes: Minute (array[Minute])
+
+## Hour (object)
++ id: 10 (number)
++ text: `10` (string)
+
+## Minute (object)
++ id: 6 (number)
++ text: `30` (string)
+
+## Activity (object)
++ id: 1 (number)
++ name: `Amazing Budapest` (string)
++ user_id: 1 (number)
++ subtitle: `I!' said the King, 'that saves a world of trouble, you.` (string)
++ main_category: ActivityCategory (array[ActivityCategory])
++ sub_categories: ActivityCategory, ActivityCategory, ActivityCategory (array[ActivityCategory])
++ length_of_activity
+    + Include ActivityLength
++ unspecified: true (boolean)
++ description: `Alice's shoulder as he wore his crown over the list, feeling very glad that it was all about, and make THEIR eyes bright and eager with many a strange tale, perhaps even with the Queen, pointing to.` (string)
++ detailed_itinerary: `Tell her to wink with one of the garden, where Alice could think of nothing better to say 'creatures,' you see, because some of YOUR adventures.' 'I could tell you my adventures--beginning from this.` (string)
++ faq: Faq, Faq, Faq (array[Faq])
++ what_to_bring: `Footman, 'and that for the baby, it was good practice to say whether the blows hurt it or not. 'Oh, PLEASE mind what you're talking about,' said Alice. 'Of course twinkling begins with an important.` (string)
++ good_to_know: `Alice: 'I don't know the way the people that walk with their heads!' and the turtles all advance! They are waiting on the glass table and the Mock Turtle, 'but if they do, why then they're a kind of.` (string)
++ languages: Language, Language (array[Language])
++ cancellation_policy: CancellationPolicy (array[CancellationPolicy])
++ min_participant: 0 (number)
++ max_participant: 0 (number)
++ extra_info
+    + Include ActivityExtraInfo
++ free_sale: `true` (string)
++ country: Country (array[Country])
++ timezone: TimeZone (array[TimeZone])
++ location: `Budapest lajos utca 64` (string)
++ coordinates
+    + Include Coordinate
++ exact_meeting_point: `A sarkon.` (string)
++ phone_zone: PhoneZone (array[PhoneZone])
++ phone_number: `123456789` (string)
++ checkin_times: OpeningHours, OpeningHours (array[OpeningHours])
++ opening_hours: OpeningHours, OpeningHours (array[OpeningHours])
++ price_categories: PriceCategory, PriceCategory (array[PriceCategory])
++ price_includes: `Include` (string)
++ price_not_includes: `Not include` (string)
++ extra_options: PriceCategory (array[PriceCategory])
++ video_url: `https:\/\/youtu.be\/1i-ztAmPs4s` (string)
++ cover: `http:\/\/twistour-be.dev.clapp.eu\/storage\/activity_cover\/85\/eo\/85eoGBwQmW9T8oynVSCr5HPUMZB7waYj.png` (string)
++ media: GalleryImage, GalleryImage, GalleryImage, GalleryImage, GalleryImage, GalleryImage, GalleryImage (array[GalleryImage])
++ completion_status: `pricing` (enum[string])
+    + Members
+        + information
+        + location
+        + availability
+        + pricing
+        + media
+        + completed
++ review_status: `pending` (enum[string])
+    + Members
+        + pending
+        + approved
+        + refused
++ is_active: false (boolean)
++ current_user
+    + Include ActivityMetadata
+
+## ActivityCategory (object)
++ id: 5 (number)
++ title: `Family` (string)
+
+## ActivityLength (object)
++ days: 1 (number)
++ hours: 6 (number)
++ minutes: 15 (number)
+
+## Faq (object)
++ question: `Faq question` (string)
++ answer: `Faq answer` (string)
+
+## CancellationPolicy (object)
++ id (enum[string])
+    + Members
+        + strict
+        + moderate
+        + flexible
+
++ title: `Strict` (string)
+
+## ActivityExtraInfo (object)
++ open_bar: false (boolean)
++ adults_only: false (boolean)
++ private_tour: false (boolean)
++ kids_friendly: false (boolean)
++ cruise_ship_ready: true (boolean)
++ vegan_food_available: false (boolean)
++ wheelchair_accessible: true (boolean)
++ hotel_transfer_included: false (boolean)
++ mobile_voucher_accepted: false (boolean)
++ hotel_transfer_available: false (boolean)
+
+## Coordinate (object)
++ latitude: `47.5308788` (string)
++ longitude: `19.0396924` (string)
+
+## PriceCategory (object)
++ name: `Ticket` (string)
++ note: `Note` (string)
++ net_price: 15 (number)
++ retail_price: 10 (number)
+
+## GalleryImage (object)
++ id: 1 (number)
++ filename: `RJtSjjPXBAirKTFH3on3E7nsNA4cYPlc.png` (string)
++ title: `` (string)
++ description: `` (string)
++ activity_id: 1 (number)
++ url: `http:\/\/twistour-be.dev.clapp.eu\/storage\/activity_media\/RJ\/tS\/RJtSjjPXBAirKTFH3on3E7nsNA4cYPlc.png` (string)
+
+## TimeZone (object)
++ id: `Europe\/Budapest` (string)
+
+## ActivityMetadata (object)
++ marked_favourite: false (boolean)
+
