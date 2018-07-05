@@ -8,17 +8,17 @@
         + activity_id: 1 (required, number)
         + user_id: 1 (required, number)
         + ticket_details: BookingPriceCategory, BookingPriceCategory (required, array[BookingPriceCategory])
-        + emergency_phone_prefix: +36 (required, string)
-        + emergency_phone_number: 70 123 3211 (required, string)
-        + emergency_hotel_info: Hotel room number 101 (required, string)
-        + billing_lastname: Daniel (required, string)
-        + billing_firstname: Test (required, string)
-        + billing_country: Hungary (required, string)
-        + billing_state: Pest (required, string)
-        + billing_other_info: anything (required, string)
-        + billing_zip_code: 1071 (required, string)
-        + billing_city: Budapest (required, string)
-        + billing_address: Test str 11 (required, string)
+        + emergency_phone_prefix: +36 (string)
+        + emergency_phone_number: 70 123 3211 (string)
+        + emergency_hotel_info: Hotel room number 101 (string)
+        + billing_lastname: Daniel (string)
+        + billing_firstname: Test (string)
+        + billing_country: Hungary (string)
+        + billing_state: Pest (string)
+        + billing_other_info: anything (string)
+        + billing_zip_code: 1071 (string)
+        + billing_city: Budapest (string)
+        + billing_address: Test str 11 (string)
 
 + Response 200 (application/json)
 
@@ -28,6 +28,33 @@
 
 + Parameters
     + id (required, number, `1`) - Booking ID
+
++ Response 200 (application/json)
+
+    + Attributes(Booking)
+
+### Edit booking [PUT /booking/{id}]
+
++ Parameters
+    + id (required, number, `1`) - Booking ID
+
++ Request (application/json)
+
+    + Attributes
+        + activity_id: 1 (required, number)
+        + user_id: 1 (required, number)
+        + ticket_details: BookingPriceCategory, BookingPriceCategory (required, array[BookingPriceCategory])
+        + emergency_phone_prefix: +36 (string)
+        + emergency_phone_number: 70 123 3211 (string)
+        + emergency_hotel_info: Hotel room number 101 (string)
+        + billing_lastname: Daniel (string)
+        + billing_firstname: Test (string)
+        + billing_country: Hungary (string)
+        + billing_state: Pest (string)
+        + billing_other_info: anything (string)
+        + billing_zip_code: 1071 (string)
+        + billing_city: Budapest (string)
+        + billing_address: Test str 11 (string)
 
 + Response 200 (application/json)
 
