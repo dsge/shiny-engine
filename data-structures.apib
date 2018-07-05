@@ -177,6 +177,28 @@
 + current_user
     + Include ActivityMetadata
 
+## Booking (object)
++ id: 1 (number)
++ activity_id: 1 (number)
++ user_id: 1 (number)
++ status: `pending` (enum[string])
+    + Members
+        + pending
+        + approved
+        + refused
++ activity_details: Activity (array[Activity])
++ emergency_phone_prefix: +36 (required, string)
++ emergency_phone_number: 70 123 3211 (required, string)
++ emergency_hotel_info: Hotel room number 101 (required, string)
++ billing_lastname: Daniel (required, string)
++ billing_firstname: Test (required, string)
++ billing_country: Hungary (required, string)
++ billing_state: Pest (required, string)
++ billing_other_info: anything (required, string)
++ billing_zip_code: 1071 (required, string)
++ billing_city: Budapest (required, string)
++ billing_address: Test str 11 (required, string)
+
 ## ActivityCategory (object)
 + id: 5 (number)
 + title: `Family` (string)
@@ -220,6 +242,13 @@
 + note: `Note` (string)
 + net_price: 15 (number)
 + retail_price: 10 (number)
+
+## BookingPriceCategory (object)
++ name: `Ticket` (string)
++ note: `Note` (string)
++ net_price: 15 (number)
++ retail_price: 10 (number)
++ amount_booked: 1 (number)
 
 ## GalleryImage (object)
 + id: 1 (number)
