@@ -3,7 +3,7 @@
 Local development
 -----
 
-Requires [https://github.com/danielgtaylor/aglio](aglio).
+Requires [aglio](https://github.com/danielgtaylor/aglio).
 
 Compile the files for displaying them in your browser, and then watch for changes: 
 ```
