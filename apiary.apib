@@ -628,6 +628,8 @@ Amennyiben a felhasználónak még el kell fogadnia a terms and conditions-t (me
     + Attributes
         + activity_id: 1 (required, number)
         + user_id: 1 (required, number)
+        + date: 2018-12-01 (required, date)
+        + checkin_time: 08:00 (required, string)
         + ticket_details: BookingPriceCategory, BookingPriceCategory (required, array[BookingPriceCategory])
         + emergency_phone_prefix: +36 (string)
         + emergency_phone_number: 70 123 3211 (string)
@@ -838,6 +840,8 @@ Amennyiben a felhasználónak még el kell fogadnia a terms and conditions-t (me
 + id: 1 (number)
 + activity_id: 1 (number)
 + user_id: 1 (number)
++ date: 2018-12-01 (date)
++ checkin_time: 08:00:00 (string)
 + status: `pending` (enum[string])
     + Members
         + pending
