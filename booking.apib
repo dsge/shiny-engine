@@ -1,4 +1,4 @@
-## Booking [/booking]
+## Booking [/user/me/booking]
 
 ### Create booking [POST]
 
@@ -24,7 +24,7 @@
 
     + Attributes(Booking)
 
-### Show booking [GET /booking/{id}]
+### Show booking [GET /user/me/booking/{id}]
 
 + Parameters
     + id (required, number, `1`) - Booking ID
@@ -33,7 +33,7 @@
 
     + Attributes(Booking)
 
-### Edit booking [PUT /booking/{id}]
+### Edit booking [PUT /user/me/booking/{id}]
 
 + Parameters
     + id (required, number, `1`) - Booking ID
@@ -42,7 +42,6 @@
 
     + Attributes
         + activity_id: 1 (required, number)
-        + user_id: 1 (required, number)
         + date: 2018-12-01 (required, date)
         + checkin_time: 08:00 (required, string)
         + ticket_details: BookingPriceCategory, BookingPriceCategory (required, array[BookingPriceCategory])
