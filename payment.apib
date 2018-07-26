@@ -1,0 +1,58 @@
+## Payment [/booking/{booking_id}/payment]
+
+### Create payment link [GET]
+
++ Parameters
+    + booking_id
+
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Execute/Authorize successful payment [GET /booking/{booking_id}/payment/success/{payment_id}?paymentId={paymentId}&token={token}&PayerID={PayerID}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+    + paymentId - from Paypal return url
+    + token - from Paypal return url
+    + PayerID - from Paypal return url
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Register failed payment [GET /booking/{booking_id}/payment/failure/{payment_id}?paymentId={paymentId}&token={token}&PayerID={PayerID}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+    + paymentId - from Paypal return url
+    + token - from Paypal return url
+    + PayerID - from Paypal return url
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Capture authorized payment [GET /booking/{booking_id}/payment/capture/{payment_id}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Void authorized payment [GET /booking/{booking_id}/payment/invalidate/{payment_id}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)

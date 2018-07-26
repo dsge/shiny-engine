@@ -647,6 +647,66 @@ Amennyiben a felhasználónak még el kell fogadnia a terms and conditions-t (me
     + Attributes(Booking)
 
 
+## Payment [/booking/{booking_id}/payment]
+
+### Create payment link [GET]
+
++ Parameters
+    + booking_id
+
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Execute/Authorize successful payment [GET /booking/{booking_id}/payment/success/{payment_id}?paymentId={paymentId}&token={token}&PayerID={PayerID}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+    + paymentId - from Paypal return url
+    + token - from Paypal return url
+    + PayerID - from Paypal return url
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Register failed payment [GET /booking/{booking_id}/payment/failure/{payment_id}?paymentId={paymentId}&token={token}&PayerID={PayerID}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+    + paymentId - from Paypal return url
+    + token - from Paypal return url
+    + PayerID - from Paypal return url
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Capture authorized payment [GET /booking/{booking_id}/payment/capture/{payment_id}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+### Void authorized payment [GET /booking/{booking_id}/payment/invalidate/{payment_id}]
+
++ Parameters
+    + booking_id - from twistour db
+    + payment_id - from twistour db
+
++ Response 200 (application/json)
+
+    + Attributes(Payment)
+
+
 ## Language [/language]
 
 ### Language list [GET]
@@ -860,6 +920,17 @@ Amennyiben a felhasználónak még el kell fogadnia a terms and conditions-t (me
 + billing_zip_code: 1071 (required, string)
 + billing_city: Budapest (required, string)
 + billing_address: Test str 11 (required, string)
+
+## Payment (object)
++ id: 15
++ booking_id: 17
++ status: paid
++ invoice_number: 5b56ee308dedd
++ paypal_id: PAY-801922490G564861BLNLO4II
++ amount: 72.44
++ authorization_id: 9N364551789727030
++ created_at: 2018-07-24 09:15:28
++ updated_at: 2018-07-24 09:15:28
 
 ## ActivityCategory (object)
 + id: 5 (number)
